@@ -1,0 +1,40 @@
+#Warps
+#Libraries
+library(geomorph)
+library(Morpho)
+
+#Import ply file
+alo<-ply2mesh("Echimys oido izq mzusp4547.ply")
+plot3d(alo)
+#Import landmarks associated to the endocast.
+aloland<-readland.tps("Echimys 4547 Landmarks oido.tps",specID = "ID")
+aloland<-aloland[,,1]
+aloland
+
+#Import mshape shape configuration from procSym analysis.
+mshape<-proc1$mshape
+mshape
+
+#Choose the main component on which the warp will be performed
+
+pcaplot_neg<-pcaplot3d(proc1,pcshow=1,sym=T, mag=-2)
+
+pcaplot_pos<-pcaplot3d(proc1,pcshow=1,sym=T, mag=2)
+pcaplot_pos<-pcaplot_pos[,,1]
+
+pcaplot_neg<-pcaplot_neg[,,1]
+
+
+#Plot warp
+
+mean.mesh <- tps3d(x = alo, refmat=aloland, tarmat = mshape)
+proc.shape_pos <- tps3d(x = mean.mesh , refmat=mshape, tarmat=pcaplot_pos)
+proc.shape_neg <- tps3d(x = mean.mesh , refmat=mshape, tarmat=pcaplot_neg)
+plot3d(mean.mesh)
+meshDist(x = proc.shape_pos , mesh2 = mean.mesh, plot = T, file = "PC1 pos", save = T, scalermap=T, rampcolors=c("red", "white", "blue"), steps=10)
+meshDist(x = proc.shape_neg , mesh2 = mean.mesh, plot = T, file = "PC1 neg", save = T, scalermap=T, rampcolors=c("red", "white", "blue"), steps=10)
+asym.shape <- tps3d(x = mean.mesh , refmat=mshape, tarmat=prueba)
+
+#Save warp
+mesh2ply(asym.shape, filename = "Endocast pc1 cero", col = NULL, writeNormals = FALSE)
+
