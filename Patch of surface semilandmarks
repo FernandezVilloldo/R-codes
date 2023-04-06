@@ -1,0 +1,45 @@
+#Code- Patch of surface semilandmarks.
+#Libraries
+require(geomorph)
+require(Morpho)
+
+#Import of the reference endocast in ply format 
+carte<-ply2mesh("mn20331 Proechimys guyannensis.ply")
+
+#Import of the reference landmarks and semi-landmarks of curves in.nts.
+cartland<-readland.nts("Landmarks y Semilandmarks Proechimys.nts")
+class(cartland)
+cartland<-cartland[,,1]
+
+#Import of the reference surface semilandmarks
+cartpat<-readland.nts("Superficie Completa Proechimys.nts")
+cartpat<-cartpat[,,1]
+class(cartpat)
+
+#Create an atlas needed in placePatch
+cartatlas<-createAtlas(carte, landmarks = cartland, patch = cartpat, corrCurves = NULL, patchCurves = NULL, keep.fix = NULL)
+plotAtlas(cartatlas)
+class(cartatlas)
+######
+
+#Import of the endocast to which to place the patch of surface landmarks.
+clyo<-ply2mesh("24159 Clyomys Endocast.ply")
+
+#Import of the landmarks and semi-landmarks of curves of the target endocast 
+#as a frame of reference for surface semilandmarks
+clyoland<-readland.nts("LyS Clyomys 24159.nts")
+clyoland<-clyoland[,,1]
+
+#Project semi-landmarks from a predefined atlas onto all specimen in a sample.
+clyopat<-placePatch(cartatlas, clyoland, prefix = "24159 Clyomys Endocast", path = "./", fileext = ".ply", inflate = 5)
+
+wire3d(clyo, col = "cyan")
+spheres3d(clyopat)
+class(clyopat)
+
+#Convert a matrix of landmark coordinates into a three-dimensional array
+clyoarray<-arrayspecs(clyopat, 329, 3)
+class(clyoarray)
+
+#Save the new configuration of landmarks and semi-landmarks
+writeland.tps(clyoarray, "Parche 24159 Clyomys Endocast.tps", scale = NULL)
