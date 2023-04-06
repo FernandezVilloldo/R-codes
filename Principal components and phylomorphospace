@@ -1,0 +1,23 @@
+#Principal components plot and phylomorphospace.
+#Libraries
+require(phytools)
+require(geomorph)
+require(picante)
+require(geiger)
+
+#Import data
+PCs<-read.csv("Dato por Especie Resumen.csv", h = T)
+row.names(PCs)<-PCs$Species
+PC12<-PCs[,16:17]
+
+#Import tree
+tree<-read.tree("ARBOL.nwk")
+plot(tree)
+
+#comparison of taxa present in phylogenies with community or trait data sets.
+match<-match.phylo.data(tree, PC12)
+arbolmatch<-match$phy
+match$phy
+
+#Creates a phylomorphospace plot
+pms<-phylomorphospace(arbolmatch, PC12, label = "horizontal")
