@@ -1,0 +1,59 @@
+#Code- Procrustes superimposition
+#Libraries
+library(geomorph)
+library(Morpho)
+
+#Import of landmark configurations in .tps format
+endo <- readland.tps(file="Consenso Endocast Resumen.tps", specID="ID")
+head(endo)
+
+#Import of numeric matrix with the indices of the rows containing paired Landmarks
+paired<-read.csv("paired endocast.csv", header=F)
+paired<-as.matrix(paired)
+
+#Determination of the type of landmark
+#Anatomical landmaks
+fix<-c(1:39)
+
+#Curves semilandmarks
+#Orb
+c1<-c(40:47)
+c2<-c(48:50)
+c3<-c(51:53)
+c4<-c(54:61)
+c5<-c(62:64)
+c6<-c(65:67)
+#Cereb
+c7<-c(68:71)
+c8<-c(72:74)
+c9<-c(75:77)
+c10<-c(78:81)
+c11<-c(82:84)
+c12<-c(85:87)
+#bula
+c13<-c(88:96)
+c14<-c(97:104)
+c15<-c(105:113)
+c16<-c(114:121)
+#base
+c17<-c(122:125)
+c18<-c(126:129)
+c19<-c(130:132)
+
+outlines<-list(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,
+               c14,c15,c16,c17,c18,c19)
+
+#Surface semilandmarks
+surf<-c(133:329)
+
+#Slides semilandmarks along curves and surfaces in 3D by minimising bending energy of a thin-plate spline deformation.
+slide1<-slider3d(dat.array=endo, SMvector=fix,  deselect=TRUE, outlines = outlines, surp = surf, pairedLM = paired, mc.cores=4)
+endoslide1<-slide1$dataslide
+
+#Procrustes superimposition and plot
+proc1<-procSym (endoslide1, pairedLM=paired)
+PCs1<-proc1$PCscore_sym
+PCs1
+pca3d(PCs1, show.labels = T)
+plot (proc1$PCscore_sym)
+text(proc1$PCscore_sym, labels=rownames(PCs1), cex=0.9, font=0.4)
