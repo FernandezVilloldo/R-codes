@@ -1,0 +1,27 @@
+#Phylogenetic ANOVA
+#Libraries
+require(phytools)
+require(geiger)
+
+#Import tree
+tree<-read.tree("ARBOL.nwk")
+#Import ecological variables
+VE<-read.csv("Variables ecologicas.csv", h=T)
+row.names(VE)<-VE$Especies
+HA<-VE$Habito
+names(HA)<-VE$Especies
+#	Convert input to a factor.
+HA2<-as.factor(HA)
+HA2
+
+#Import data
+PCs<-read.csv("Datos Consenso por Especie.csv", h=T)
+row.names(PCs)<-PCs$Species
+#Select data to analyze
+PC12<-PCs[,15:16]
+names(PC12)<-PCs$Species
+PC12
+
+#Phylogenetic ANOVA analysis
+x<-aov.phylo(PC12~HA2, tree, nsim=1000, test="Wilks")
+summary.aov(x)
