@@ -1,0 +1,33 @@
+#Allometric and non-allometric component of shape variation.
+#Library
+library(Morpho)
+
+#Import data
+PCs<-read.csv("Datos Consenso por Especie.csv", h=T)
+row.names(PCs)<-PCs$Species
+
+#Extract Principal Components 1 and 2.
+PCs12<-PCs[,16:39]
+PCs12
+#Extract endocast centroid size.
+CS<-Pcs$Endocast.centroid
+names(CS)<-PCs$Species
+CS
+
+#Calculate allometric component
+CAC<-CAC(PCs12,CS , groups = NULL, log = TRUE)
+
+#plot scores against Centroid size
+plot(CAC$size, CAC$CACscores)
+text(CAC$size, CAC$CACscores, row.names(CAC$CACscores))
+str(CAC)
+#plot scores CAC vs RSC1
+plot(CAC$CACscores,CAC$RSCscores[,1])
+text(CAC$CACscores,CAC$RSCscores[,1], row.names(CAC$CACscores))
+#plot scores RSC1 vs RSC2
+plot(CAC$RSCscores[,1],CAC$RSCscores[,2])
+text(CAC$RSCscores[,1],CAC$RSCscores[,2], row.names(CAC$CACscores))
+
+#check for correlation
+cor.test(CAC$size,CAC$CACscores)
+
