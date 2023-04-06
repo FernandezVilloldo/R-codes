@@ -1,0 +1,68 @@
+#Evolutionary models
+
+#Libraries
+require(ape)
+require(phytools)
+require(picante)
+require(mvMORPH)
+library(surface)
+
+#Import tree
+tree<-read.tree("ARBOL.nwk")
+#Import data
+PCs<-read.csv("Dato por Especie Resumen.csv", h = T)
+row.names(PCs)<-PCs$Species
+PCs
+#Select data to test
+PCs12<-PCs$Neocortex.ratio
+names(PCs12)<-PCs$Species
+PCs12
+
+#Compare taxa present in phylogenies with community or trait data sets
+match2<-match.phylo.data(tree, PCs12)
+arbolmatch2<-match2$phy
+datosmatch2<-match2$data
+
+# BM1 - Analysis with a unique rate matrix
+fit1<-mvBM(arbolmatch2, datosmatch2, model="BM1", method="pic")
+
+# EB - model
+mvEB(arbolmatch2, datosmatch2, method="pic")
+
+# OU1 - Analysis with a unique optimum
+mvOU(arbolmatch2, datosmatch2, model="OU1", method="sparse")
+
+#Import ecological variables
+PCou<-read.csv("variables ecologicas.csv", h=T)
+row.names(PCou)<-PCou$Especies
+PCou
+
+#Compare taxa present in phylogenies with community or trait data sets
+match<-match.phylo.data(tree, PCou)
+arbolmatch<-match$phy
+datosmatch<-match$data
+
+
+# Performs stochastic mapping using several different alternative methods.
+Habitat<-setNames(datosmatch$Habitat,rownames(datosmatch))
+OUHabitat<-make.simmap(arbolmatch,Habitat, model="SYM", nsim=1)
+plotSimmap(OUHabitat)
+
+
+Habito<-setNames(datosmatch$Habito,rownames(datosmatch))
+OUHabit<-make.simmap(arbolmatch,Habito , model="SYM", nsim=1)
+plotSimmap(OUHabit)
+
+
+Dieta<-setNames(datosmatch$Dieta,rownames(datosmatch))
+OUDiet<-make.simmap(arbolmatch, Dieta, model="SYM", nsim=1)
+plotSimmap(OUDiet)
+
+
+# OUM - Analysis with multiple optima
+mvOU(OUHabitat, datosmatch2,method="rpf",model="OUM",control = list(maxit = 100000),param = list(sigma = NULL,alpha = NULL),optimization = c("Nelder-Mead"))
+
+mvOU(OUDiet, datosmatch2,method="rpf",model="OUM",control = list(maxit = 100000),param = list(sigma = NULL,alpha = NULL),optimization = c("Nelder-Mead"))
+
+mvOU(OUHabit, datosmatch2,method="rpf",model="OUM",control = list(maxit = 100000),param = list(sigma = NULL,alpha = NULL),optimization = c("Nelder-Mead"))
+
