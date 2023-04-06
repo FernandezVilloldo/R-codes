@@ -1,0 +1,35 @@
+#Permutation test
+#Libraries
+library(coin) #one_way test
+library(rcompanion) #pairwisePermutationTest
+library(ggpubr) #ggboxplot
+library(car) #Levene's test
+
+#Import data
+PCs<-read.csv("Datos Consenso por Especie.csv", h=T)
+Neosurfratio<-PCs[,c("Neocortex.ratio","Clade")]
+rECCS<-PCs[,c("Residual.ECCs...Largo.de.craneo.inc.basi.","Clade")]
+BORatio<-PCs[,c("Cs.OB.Ratio","Clade")]
+LPRatio<-PCs[,c("Cs.LP.Ratio","Clade")]
+
+comp<- list(c("Echiminyi", "Euryzygomatomyinae"),c("Echiminyi", "Myocastorini"), 
+            c("Myocastorini", "Euryzygomatomyinae"))
+
+#Boxplot
+ggplot(data= PCs,aes(reorder(Clade,Neocortex.ratio),Neocortex.ratio, colour =Clade)) + 
+  theme_bw()+geom_boxplot()+ geom_point(aes(size =Neocortex.ratio, alpha = 0.5 ))
+
+#Fisher-Pitman permutation test
+
+Neosurfratio$Clade = factor(Neosurfratio$Clade, levels = c("Echiminyi","Euryzygomatomyinae","Myocastorini")) 
+
+oneway_test(Neocortex.ratio~ Clade,data=Neosurfratio)
+
+PT_PEQ<-pairwisePermutationTest(Residual.ECCs...Largo.de.craneo.inc.basi. ~ Clade,data=rECCS,method="fdr")
+PT_PEQ                        
+
+#Test if data normally distributed (Normally distributed)
+shapiro.test(rECCS$Residual.ECCs...Largo.de.craneo.inc.basi.)
+
+# Bartlett test when data are normally distrubuted (YES there is homogeneity of variances)
+bartlett.test(Residual.ECCs...Largo.de.craneo.inc.basi. ~ Clade, data = rECCS)
