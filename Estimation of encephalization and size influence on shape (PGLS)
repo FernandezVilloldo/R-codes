@@ -25,8 +25,13 @@ inf <- comparative.data(arbolmatch, PCs, Species, vcv=TRUE)
 inf
 #PGLS Analysis (Encephalization)
 mod0 <- pgls(Endocast.centroid ~ Basilar.lenght, inf, lambda='ML')
-
 summary(mod0)
+coef(mod0)
+
+#OLS Analysis
+linearregression<-lm(Endocast.centroid ~ Basilar.lenght, data=PCs)
+summary(linearregression)
+coef(linearregression)
 
 #Size influence in shape
 mod1 <- pgls(PC1-9 ~ Endocast.centroid, inf, lambda='ML')
