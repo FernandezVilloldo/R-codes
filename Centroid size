@@ -1,0 +1,3 @@
+#Centroid size
+Data<-readland.tps(Species.tps", specID = "ID")
+cSize(tri[,,1])
