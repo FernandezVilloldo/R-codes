@@ -10,15 +10,8 @@ require(geiger)
 tree<-read.tree("ARBOL.nwk")
 
 #Import data
-scores<-read.csv("Datos Consenso por Especie.csv", h=T)
-row.names(scores)<-scores$Species
-
-#Extract Principal Components 1 and 2
-pc12<-scores[,12:13]
-#Extract data to calculate phylogenetic signal
-log<-scores$log.10.cs
-names(log)<-scores$Species
-log
+PCs<-read.csv("Datos Consenso por Especie.csv", h=T)
+row.names(PCs)<-PCs$Species
 
 #comparison of taxa present in phylogenies with community or trait data sets
 
@@ -26,9 +19,17 @@ match<-match.phylo.data(tree, pc12)
 str(match)
 treematch<-match$phy
 
+#Extract Principal Components 1 and 2
+pc12<-PCs[,c("PC1","PC2")]
+
+#Extract data to calculate phylogenetic signal (measures or principal components)
+log<-PCs$log.10.cs
+names(log)<-PCs$Species
+
+#If it is a data.frame, converts to numeric array
+log_matrix <- as.matrix(log)
 
 #Phylogenetic signal for the selected data
-
 phyPC12<-physignal(log, treematch)
 phyPC12
 plot(phyPC12)
@@ -36,11 +37,9 @@ str(phyPC12)
 
 
 #Multivariate phylogenetic signal
-
-#Select all Principal components
-todo<-scores[,13:48]
+todo<-PCs[,13:48]
 head(todo)
-row.names(todo)<-scores$Species
+row.names(todo)<-PCs$Species
 todo
 multiPS<-multiPhylosignal(todo, treematch)
 multiPS
